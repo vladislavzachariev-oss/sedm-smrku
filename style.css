@@ -46,7 +46,10 @@ h1,h2,h3,p{margin:0}
 
 /* ---------- hero ---------- */
 .hero{position:relative;height:460vh}
-.hero__stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:#1b1d22}
+.hero__stage{position:sticky;top:0;height:100vh;height:100lvh;overflow:hidden;background:#1b1d22;--vb:0px}
+/* the stage is as tall as the screen with the browser bars hidden (no black strip when they slide away);
+   the bottom row is lifted by the bars' height so it is never under them */
+@supports (height:100svh){.hero__stage{--vb:calc(100lvh - 100svh)}}
 .hero__gl,.hero__fallback,.hero__fallback img{position:absolute;inset:0;width:100%;height:100%}
 .hero__fallback{display:none}
 .hero__fallback img{object-fit:cover;opacity:0;transition:opacity .2s linear}
@@ -58,7 +61,7 @@ h1,h2,h3,p{margin:0}
   linear-gradient(0deg,rgba(8,9,10,.62) 0%,rgba(8,9,10,.18) 34%,rgba(8,9,10,0) 55%),
   linear-gradient(90deg,rgba(8,9,10,.38) 0%,rgba(8,9,10,0) 46%)}
 
-.hero__copy{position:absolute;left:var(--pad);bottom:clamp(92px,15vh,150px);max-width:min(760px,64vw)}
+.hero__copy{position:absolute;left:var(--pad);bottom:calc(clamp(92px,15vh,150px) + var(--vb));max-width:min(760px,64vw)}
 .eyebrow{font:600 11px/1.4 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:rgba(236,230,218,.82);margin-bottom:22px}
 .lines{display:grid}
 .line{grid-area:1/1;align-self:end}
@@ -70,7 +73,7 @@ h1,h2,h3,p{margin:0}
 .line .line__sub{opacity:0;transform:translateY(10px);transition:opacity .6s .15s,transform .8s .15s cubic-bezier(.2,.7,.2,1)}
 .line.is-on .line__sub{opacity:1;transform:none}
 
-.clock{position:absolute;right:var(--pad);bottom:clamp(92px,15vh,150px);width:220px;text-align:center}
+.clock{position:absolute;right:var(--pad);bottom:calc(clamp(92px,15vh,150px) + var(--vb));width:220px;text-align:center}
 .clock__arc{width:220px;height:120px;overflow:visible}
 .clock__track,.clock__done{fill:none;stroke-width:1.2}
 .clock__track{stroke:rgba(236,230,218,.22);stroke-dasharray:2 5}
@@ -81,7 +84,7 @@ h1,h2,h3,p{margin:0}
 .clock__time{margin-top:-30px;font:300 54px/1 var(--serif);font-variant-numeric:tabular-nums;letter-spacing:.01em}
 .clock__label{margin-top:8px;font:600 11px/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
 
-.ticks{position:absolute;left:var(--pad);right:var(--pad);bottom:34px;margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ticks{position:absolute;left:var(--pad);right:var(--pad);bottom:calc(34px + var(--vb));margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .ticks button{width:100%;text-align:left;background:none;border:0;padding:12px 0 0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(236,230,218,.5);position:relative;transition:color .4s}
 .ticks button::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:rgba(236,230,218,.22)}
 .ticks button::after{content:"";position:absolute;left:0;top:0;height:1px;width:var(--fill,0%);background:var(--linen)}
@@ -233,13 +236,13 @@ h1,h2,h3,p{margin:0}
   .brand__mark{width:44px}
   .pill{padding:9px 14px;font-size:12px}
   .hero{height:420vh}
-  .hero__copy{left:16px;right:16px;max-width:none;bottom:200px}
+  .hero__copy{left:16px;right:16px;max-width:none;bottom:calc(200px + var(--vb))}
   .line__big{font-size:clamp(42px,11.5vw,58px)}
   .line__sub{font-size:15px;max-width:300px}
-  .clock{left:16px;right:auto;bottom:74px;width:auto;display:flex;align-items:baseline;gap:12px;transform:none;text-align:left}
+  .clock{left:16px;right:auto;bottom:calc(74px + var(--vb));width:auto;display:flex;align-items:baseline;gap:12px;transform:none;text-align:left}
   .clock__arc{display:none}
   .clock__time{margin:0;font-size:34px}
-  .ticks{left:16px;right:16px;bottom:22px}
+  .ticks{left:16px;right:16px;bottom:calc(22px + var(--vb))}
   .ticks button{font-size:10px;letter-spacing:.1em}
   .about{padding-left:16px;padding-right:16px}
   .facts{grid-template-columns:1fr 1fr;row-gap:30px}

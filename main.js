@@ -46,6 +46,7 @@
 
   /* ---------- smooth scroll ---------- */
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });   // phone bars sliding in/out must not re-measure the page
   const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add(t => lenis.raf(t * 1000));
@@ -133,25 +134,30 @@
   const FS = `precision highp float;
 varying vec2 vUv;
 uniform sampler2D uT0,uT1,uT2,uT3,uD;
-uniform vec2 uRes,uM;
+uniform vec2 uRes,uM,uC;
 uniform float uImgA,uP,uT,uS,uMo;
 float h21(vec2 p){p=fract(p*vec2(233.34,851.73));p+=dot(p,p+23.45);return fract(p.x*p.y);}
+/* lattice hash in exact integer maths: a corner shared by two cells must hash the same in both,
+   or phones that fuse multiply-adds draw seams along the cell edges */
+float pm(float x){return mod((x*34.+1.)*x,289.);}
+float hv(vec2 i){i=mod(i,289.);return pm(pm(pm(i.x)+i.y))/289.;}
 float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
-  return mix(mix(h21(i),h21(i+vec2(1.,0.)),f.x),mix(h21(i+vec2(0.,1.)),h21(i+vec2(1.,1.)),f.x),f.y);}
+  return mix(mix(hv(i),hv(i+vec2(1.,0.)),f.x),mix(hv(i+vec2(0.,1.)),hv(i+vec2(1.,1.)),f.x),f.y);}
 float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*nz(p);p=p*2.02+vec2(1.7,9.2);a*=.5;}return v;}
-vec3 tx(float k,vec2 p){if(k<.5)return texture2D(uT0,p).rgb;if(k<1.5)return texture2D(uT1,p).rgb;if(k<2.5)return texture2D(uT2,p).rgb;return texture2D(uT3,p).rgb;}
+vec2 T(vec2 p){return vec2((p.x-uC.x)/uC.y,p.y);}  /* photo uv -> loaded texture (whole photo or the portrait crop) */
+vec3 tx(float k,vec2 p){p=T(p);if(k<.5)return texture2D(uT0,p).rgb;if(k<1.5)return texture2D(uT1,p).rgb;if(k<2.5)return texture2D(uT2,p).rgb;return texture2D(uT3,p).rgb;}
 float lum(vec3 c){return dot(c,vec3(.299,.587,.114));}
 void main(){
   float ra=uRes.x/uRes.y;
   vec2 s=ra>uImgA?vec2(1.,uImgA/ra):vec2(ra/uImgA,1.);
   s/=1.07+.07*uS;
-  vec2 c0=vec2(clamp(.62,s.x*.5,1.-s.x*.5),clamp(.5,s.y*.5,1.-s.y*.5));
+  vec2 c0=vec2(clamp(.62,uC.x+s.x*.5,uC.x+uC.y-s.x*.5),clamp(.5,s.y*.5,1.-s.y*.5));
   vec2 uv=(vUv-.5)*s+c0;
   vec2 dir=uM*vec2(.03,.017);
   float d=texture2D(uD,uv).r;
   vec2 p=uv+dir*(d-.42);
   d=texture2D(uD,p).r; p=uv+dir*(d-.42);
-  d=texture2D(uD,p).r; p=clamp(p,.001,.999);
+  d=texture2D(uD,p).r; p=clamp(p,vec2(uC.x+.001,.001),vec2(uC.x+uC.y-.001,.999));
 
   float k=min(2.,floor(uP)),f=uP-k;
   float n=nz(p*vec2(9.,5.));
@@ -190,9 +196,9 @@ void main(){
   /* stars: twinkle the photo's own stars + one shooting star */
   float sky=1.-smoothstep(.03,.09,d);
   if(w3>.01){
-    vec3 nc=texture2D(uT3,p).rgb;
-    vec2 o=vec2(1.6/2400.,1.6/1340.);
-    float mean=(lum(texture2D(uT3,p+vec2(o.x,0.)).rgb)+lum(texture2D(uT3,p-vec2(o.x,0.)).rgb)+lum(texture2D(uT3,p+vec2(0.,o.y)).rgb)+lum(texture2D(uT3,p-vec2(0.,o.y)).rgb))*.25;
+    vec3 nc=tx(3.,p);
+    vec2 o=vec2(1.8/2752.,1.8/1536.);
+    float mean=(lum(tx(3.,p+vec2(o.x,0.)))+lum(tx(3.,p-vec2(o.x,0.)))+lum(tx(3.,p+vec2(0.,o.y)))+lum(tx(3.,p-vec2(0.,o.y))))*.25;
     float star=smoothstep(.04,.2,lum(nc)-mean);
     float ph=h21(floor(p*vec2(1200.,670.)));
     float tw=.5+.5*sin(t*(2.+ph*3.)+ph*40.);
@@ -219,15 +225,18 @@ void main(){
 
   const cv = $('#gl');
   const gl = cv.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'high-performance' });
-  const suf = small ? '-m' : '';
-  const SRC = ['img/rano', 'img/poledne', 'img/vecer', 'img/noc'].map(s => s + suf + '.webp');
+  /* a portrait screen only ever sees the middle of the photo, so it gets that strip at full
+     resolution (x 1060–2353 of the 2752 px photo) instead of a downscaled whole frame */
+  const CROP = [1060 / 2752, 1293 / 2752];
+  const wantCrop = () => innerWidth / innerHeight < .8;
+  const SET = c => ['img/rano', 'img/poledne', 'img/vecer', 'img/noc'].map(s => s + (c ? '-p' : '') + '.webp');
   const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = rej; i.src = src; });
 
   if (!gl) {
     document.documentElement.classList.add('no-gl');
     fallbackImgs = $$('#fallback img');
-    fallbackImgs.forEach((im, k) => { im.src = SRC[k]; im.style.objectPosition = '64% 50%'; });
-    loadImg(SRC[0]).then(loaded, loaded);
+    fallbackImgs.forEach((im, k) => { im.src = SET(false)[k]; im.style.objectPosition = '64% 50%'; });
+    loadImg(SET(false)[0]).then(loaded, loaded);
   } else {
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s)); return s; };
     const pr = gl.createProgram();
@@ -236,7 +245,7 @@ void main(){
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     const U = n => gl.getUniformLocation(pr, n);
-    const u = { res: U('uRes'), m: U('uM'), a: U('uImgA'), p: U('uP'), t: U('uT'), s: U('uS'), mo: U('uMo') };
+    const u = { res: U('uRes'), m: U('uM'), c: U('uC'), a: U('uImgA'), p: U('uP'), t: U('uT'), s: U('uS'), mo: U('uMo') };
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     const texs = [0, 1, 2, 3, 4].map(k => {
       const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + k); gl.bindTexture(gl.TEXTURE_2D, t);
@@ -248,20 +257,29 @@ void main(){
     });
     ['uT0', 'uT1', 'uT2', 'uT3', 'uD'].forEach((n, k) => gl.uniform1i(U(n), k));
     const upload = (k, img) => { gl.activeTexture(gl.TEXTURE0 + k); gl.bindTexture(gl.TEXTURE_2D, texs[k]); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img); };
-    let imgA = 2400 / 1340, ready = false;
+    const imgA = 2752 / 1536;
+    let ready = false, crop = wantCrop(), gen = 0, swapping = false;
+    const SRC = SET(crop);
     Promise.all([loadImg(SRC[0]), loadImg('img/hloubka.png')]).then(([a, d]) => {
-      imgA = a.naturalWidth / a.naturalHeight;
       [0, 1, 2, 3].forEach(k => upload(k, a));        // until the rest arrive, every hour is dawn
       upload(4, d);
       ready = true; loaded();
-      SRC.slice(1).forEach((s, i) => loadImg(s).then(im => upload(i + 1, im)));
+      SRC.slice(1).forEach((s, i) => loadImg(s).then(im => { if (gen === 0) upload(i + 1, im); }));
     }).catch(loaded);
+    function swapSet() {                               // phone turned: load the other set, switch all four at once
+      if (swapping || !ready || wantCrop() === crop) return;
+      swapping = true; const c = wantCrop();
+      Promise.all(SET(c).map(loadImg)).then(ims => { gen++; ims.forEach((im, k) => upload(k, im)); crop = c; })
+        .catch(() => {}).then(() => { swapping = false; swapSet(); });
+    }
+    addEventListener('resize', swapSet);
 
-    let W = 0, Hh = 0;
+    let W = 0, Hh = 0, dprCap = small ? 2 : 1.75, slow = 0, lastNow = 0;
     function size() {
-      const dpr = Math.min(devicePixelRatio || 1, small ? 1.5 : 1.75);
-      W = Math.round(cv.clientWidth * dpr); Hh = Math.round(cv.clientHeight * dpr);
-      cv.width = W; cv.height = Hh; gl.viewport(0, 0, W, Hh);
+      const dpr = Math.min(devicePixelRatio || 1, dprCap);
+      const w = Math.round(cv.clientWidth * dpr), h = Math.round(cv.clientHeight * dpr);
+      if (w === W && h === Hh) return;                 // toolbar show/hide: keep the canvas, no blank frame
+      W = w; Hh = h; cv.width = W; cv.height = Hh; gl.viewport(0, 0, W, Hh);
     }
     size(); addEventListener('resize', size);
 
@@ -282,13 +300,19 @@ void main(){
     const t0 = performance.now();
     (function frame(now) {
       requestAnimationFrame(frame);
-      if (!visible || !ready) return;
+      if (!visible || !ready) { lastNow = 0; return; }
+      if (lastNow) {                                     // a phone that can't keep up gets fewer pixels, not a stutter
+        slow = now - lastNow > 30 ? slow + 1 : Math.max(0, slow - 1);
+        if (slow > 45 && dprCap > 1.25) { dprCap -= .5; slow = 0; size(); }
+      }
+      lastNow = now;
       const t = (now - t0) / 1000;
       if (now - mouse.last > 2500 || reduced) {          // idle: slow sway like a breath
         mouse.tx = reduced ? 0 : Math.sin(t * .23) * .55; mouse.ty = reduced ? 0 : Math.sin(t * .17 + 1) * .3;
       }
       mouse.x = lerp(mouse.x, mouse.tx, .05); mouse.y = lerp(mouse.y, mouse.ty, .05);
       gl.uniform2f(u.res, W, Hh); gl.uniform2f(u.m, mouse.x, mouse.y);
+      gl.uniform2f(u.c, crop ? CROP[0] : 0, crop ? CROP[1] : 1);
       gl.uniform1f(u.a, imgA); gl.uniform1f(u.p, uP); gl.uniform1f(u.t, t);
       gl.uniform1f(u.s, heroP); gl.uniform1f(u.mo, reduced ? 0 : 1);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
