@@ -351,6 +351,7 @@ void main(){
   }
   fr.addEventListener('click', e => { if (!e.target.closest('.lamp__switch')) toggleLamp(); });
   sw.addEventListener('click', toggleLamp);
+  fr.addEventListener('contextmenu', e => e.preventDefault());  // podržení prstem nemá nabízet uložení fotky
   new IntersectionObserver(([en]) => { L.vis = en.isIntersecting; if (L.vis) L.seen = true; }, { threshold: .25 }).observe(fr);
   (function lampFrame(now) {
     requestAnimationFrame(lampFrame);

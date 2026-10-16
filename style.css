@@ -125,8 +125,8 @@ h1,h2,h3,p{margin:0}
 
 /* ---------- lamp ---------- */
 .lamp{padding:0 var(--pad) clamp(90px,14vh,150px)}
-.lamp__frame{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:#05070b;cursor:none;touch-action:pan-y;--x:62%;--y:52%;--r:0px;isolation:isolate}
-.lamp__frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.lamp__frame{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:#05070b;cursor:none;touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;--x:62%;--y:52%;--r:0px;isolation:isolate}
+.lamp__frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
 .lamp__dark{filter:brightness(.62) saturate(.85)}
 .lamp__lit{-webkit-mask-image:radial-gradient(circle var(--r) at var(--x) var(--y),#000 0%,rgba(0,0,0,.92) 38%,rgba(0,0,0,.45) 66%,transparent 100%);mask-image:radial-gradient(circle var(--r) at var(--x) var(--y),#000 0%,rgba(0,0,0,.92) 38%,rgba(0,0,0,.45) 66%,transparent 100%)}
 .lamp__glow{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(circle calc(var(--r)*.7) at var(--x) var(--y),rgba(255,166,74,.3),transparent 70%)}
@@ -160,9 +160,9 @@ h1,h2,h3,p{margin:0}
 .room__txt p:last-child{color:var(--muted);font-size:15px}
 
 /* ---------- year ---------- */
-.year{padding:clamp(110px,18vh,190px) var(--pad);max-width:1380px;margin:0 auto}
+.year{padding:clamp(110px,18vh,190px) var(--pad);max-width:1380px;margin:0 auto;overflow-x:clip}
 .seasons{list-style:none;margin:40px 0 0;padding:0;border-top:1px solid var(--line)}
-.season{position:relative;display:grid;grid-template-columns:1fr minmax(260px,420px);align-items:center;gap:24px;padding:clamp(18px,3vh,30px) 0;border-bottom:1px solid var(--line);overflow:hidden}
+.season{position:relative;display:grid;grid-template-columns:1fr minmax(260px,420px);align-items:center;gap:24px;padding:clamp(18px,3vh,30px) 0;border-bottom:1px solid var(--line)}
 .season::before{content:"";position:absolute;inset:0;background:var(--tint);transform:scaleY(0);transform-origin:50% 100%;transition:transform .6s cubic-bezier(.2,.7,.2,1);z-index:-1}
 .season h3{font:300 italic clamp(64px,11vw,170px)/.92 var(--serif);letter-spacing:-.02em;transition:color .5s,transform .7s cubic-bezier(.2,.7,.2,1)}
 .season p{color:var(--muted);font-size:16px;transition:color .5s}
