@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sedm smrků — chata v Jizerských horách</title>
+<meta name="description" content="Ukázka stránky horské chaty: jeden záběr, celý den od rozbřesku do noci, rozsvícená světnice a poptávka termínu. Smyšlená značka; Vladislav Zachariev, Whyte Lynx.">
+<meta name="theme-color" content="#0d0f0d">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sedm smrků — ukázka stránky od Whyte Lynx">
+<meta property="og:description" content="Horská chata, celý den v jednom záběru, světnice, kterou si rozsvítíte. Smyšlená značka, ukázka práce Whyte Lynx.">
+<meta property="og:image" content="https://vladislavzachariev-oss.github.io/sedm-smrku/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://vladislavzachariev-oss.github.io/sedm-smrku/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/rano.webp">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <svg class="loader__trees" viewBox="0 0 140 40"><g fill="currentColor"></g></svg>
+  <p class="loader__txt">Sedm smrků</p>
+</div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Sedm smrků, na začátek">
+    <svg class="brand__mark" viewBox="0 0 70 24" aria-hidden="true"><g fill="currentColor"></g></svg>
+    <span>Sedm smrků</span>
+  </a>
+  <nav class="nav__links" aria-label="Hlavní">
+    <a href="#chata">Chata</a>
+    <a href="#pokoje">Pokoje</a>
+    <a href="#rok">Rok u chaty</a>
+  </nav>
+  <a class="pill" href="#rezervace">Volné termíny</a>
+</header>
+
+<main id="top">
+
+  <!-- 1. Den v jednom záběru -->
+  <section class="hero" id="hero" aria-label="Den u chaty">
+    <div class="hero__stage">
+      <canvas class="hero__gl" id="gl" aria-hidden="true"></canvas>
+      <div class="hero__fallback" id="fallback" aria-hidden="true">
+        <img src="img/rano.webp" alt=""><img src="img/poledne.webp" alt=""><img src="img/vecer.webp" alt=""><img src="img/noc.webp" alt="">
+      </div>
+      <div class="hero__shade" aria-hidden="true"></div>
+
+      <div class="hero__copy">
+        <h1 class="eyebrow">Sedm smrků · chata v Jizerských horách</h1>
+        <div class="lines" id="lines">
+          <div class="line is-on"><p class="line__big">Mlha ještě spí<br><em>v údolí.</em></p><p class="line__sub">Káva na prahu, rosa po kotníky a nikde nikdo.</p></div>
+          <div class="line"><p class="line__big">Hřebeny<br><em>na dosah ruky.</em></p><p class="line__sub">Stezky začínají hned za chatou. Vrátíte se, až budete chtít.</p></div>
+          <div class="line"><p class="line__big">Večer<br><em>zlátnou okna.</em></p><p class="line__sub">Kamna, deka a slunce, které zapadá za Jizeru.</p></div>
+          <div class="line"><p class="line__big">Pak už jen<br><em>hvězdy.</em></p><p class="line__sub">Žádné lampy, žádný hluk. Sedm smrků a celé nebe.</p></div>
+        </div>
+      </div>
+
+      <div class="clock" aria-hidden="true">
+        <svg class="clock__arc" viewBox="0 0 220 120">
+          <path class="clock__track" d="M10 110 A100 100 0 0 1 210 110"/>
+          <path class="clock__done" id="arcDone" d="M10 110 A100 100 0 0 1 210 110"/>
+          <g id="orb"><circle class="clock__sun" r="7"/><circle class="clock__moon" r="7"/><circle class="clock__bite" r="6" cx="4" cy="-3"/></g>
+        </svg>
+        <p class="clock__time" id="clockTime">05:40</p>
+        <p class="clock__label" id="clockLabel">rozbřesk</p>
+      </div>
+
+      <ol class="ticks" id="ticks" aria-label="Denní doby">
+        <li><button type="button" data-i="0" class="is-on">Ráno</button></li>
+        <li><button type="button" data-i="1">Poledne</button></li>
+        <li><button type="button" data-i="2">Večer</button></li>
+        <li><button type="button" data-i="3">Noc</button></li>
+      </ol>
+
+    </div>
+  </section>
+
+  <!-- 2. Chata -->
+  <section class="about" id="chata">
+    <p class="kicker">Chata</p>
+    <p class="about__text" id="aboutText">Postavili jsme ji z opáleného modřínu a štít udělali ze skla, aby bylo z postele vidět na hřebeny. Uvnitř kamna, dřevo, len a ticho. Nic víc jsme nepřidali, protože nic víc tady nechybí.</p>
+    <ul class="facts">
+      <li><b>4</b><span>lůžka ve dvou pokojích</span></li>
+      <li><b>1</b><span>kamna, dřevo je nachystané</span></li>
+      <li><b>0</b><span>sousedů na dohled</span></li>
+      <li><b>7</b><span>smrků kolem dokola</span></li>
+    </ul>
+  </section>
+
+  <!-- 3. Rozsviťte si -->
+  <section class="lamp" id="lampa" aria-label="Světnice">
+    <div class="lamp__frame" id="lampFrame">
+      <img class="lamp__dark" src="img/svetnice-tma.webp" alt="Světnice v noci, jen měsíční světlo z velkého okna" loading="lazy">
+      <img class="lamp__lit" id="lampLit" src="img/svetnice.webp" alt="Tatáž světnice rozsvícená, oheň v kamnech" loading="lazy">
+      <div class="lamp__glow" id="lampGlow" aria-hidden="true"></div>
+      <div class="lamp__copy">
+        <p class="kicker">Světnice</p>
+        <h2>Rozsviťte si.</h2>
+        <p class="lamp__hint" id="lampHint">Posvěťte si myší, nebo prstem. Klepnutím rozsvítíte celou.</p>
+      </div>
+      <button class="lamp__switch" id="lampSwitch" type="button" aria-pressed="false"><span></span>Rozsvítit</button>
+    </div>
+  </section>
+
+  <!-- 4. Pokoje -->
+  <section class="rooms" id="pokoje" aria-label="Pokoje">
+    <div class="rooms__pin">
+      <header class="rooms__head">
+        <p class="kicker">Pokoje</p>
+        <h2>Tři místa,<br><em>kde se dá zmizet.</em></h2>
+        <p class="rooms__count"><span id="roomNow">01</span> / 03</p>
+      </header>
+      <div class="rooms__track" id="roomsTrack">
+        <article class="room">
+          <div class="room__img"><img src="img/svetnice.webp" alt="Světnice s kamny a velkým oknem do údolí" loading="lazy"></div>
+          <div class="room__txt">
+            <h3>Světnice</h3>
+            <p class="room__meta">kamna · velké okno · stůl pro šest</p>
+            <p>Srdce chaty. Tady se snídá, hraje, čte a večer přikládá. Okno přes celou stěnu je obraz, který se mění každou hodinu.</p>
+          </div>
+        </article>
+        <article class="room">
+          <div class="room__img"><img src="img/podkrovi.webp" alt="Ložnice v podkroví se střešním oknem" loading="lazy"></div>
+          <div class="room__txt">
+            <h3>Podkroví</h3>
+            <p class="room__meta">2 lůžka · střešní okno · len</p>
+            <p>Pod šikminou, s oknem přímo nad postelí. Usínáte pod hvězdami, budí Vás světlo, ne budík.</p>
+          </div>
+        </article>
+        <article class="room">
+          <div class="room__img"><img src="img/sauna.webp" alt="Sauna s proskleným výhledem na les" loading="lazy"></div>
+          <div class="room__txt">
+            <h3>Sauna</h3>
+            <p class="room__meta">pro čtyři · výhled do lesa · sud s vodou</p>
+            <p>Po celém dni na běžkách nebo v lese. Ze sauny rovnou do sněhu, v létě do sudu s vodou z pramene.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Rok u chaty -->
+  <section class="year" id="rok" aria-label="Rok u chaty">
+    <p class="kicker">Rok u chaty</p>
+    <ol class="seasons">
+      <li class="season" style="--tint:#b9c7d6">
+        <h3>Zima</h3>
+        <p>Běžky od prahu, sauna, sníh po okna a kamna, která nevyhasnou.</p>
+      </li>
+      <li class="season" style="--tint:#c9d6a8">
+        <h3>Jaro</h3>
+        <p>Bledule u potoka, první káva venku a les, který se probouzí.</p>
+      </li>
+      <li class="season" style="--tint:#e5c98c">
+        <h3>Léto</h3>
+        <p>Borůvky za chatou, koupání v přehradě a noci, kdy se nechce dovnitř.</p>
+      </li>
+      <li class="season" style="--tint:#d9a07a">
+        <h3>Podzim</h3>
+        <p>Houby, mlhy v údolí a dlouhé večery s knížkou u ohně.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- 6. Rezervace -->
+  <section class="book" id="rezervace" aria-label="Poptávka termínu">
+    <div class="book__intro">
+      <p class="kicker">Volné termíny</p>
+      <h2>Kdy<br><em>přijedete?</em></h2>
+      <p>Vyberte příjezd a odjezd. Ozveme se Vám do druhého dne a domluvíme zbytek.</p>
+      <dl class="book__sum" id="sum">
+        <div><dt>Příjezd</dt><dd id="sumIn">—</dd></div>
+        <div><dt>Odjezd</dt><dd id="sumOut">—</dd></div>
+        <div><dt>Nocí</dt><dd id="sumN">—</dd></div>
+      </dl>
+    </div>
+    <form class="cal" id="cal" novalidate>
+      <div class="cal__head">
+        <button type="button" class="cal__nav" id="calPrev" aria-label="Předchozí měsíc">‹</button>
+        <p class="cal__month" id="calMonth" aria-live="polite"></p>
+        <button type="button" class="cal__nav" id="calNext" aria-label="Další měsíc">›</button>
+      </div>
+      <div class="cal__dow" aria-hidden="true"><span>po</span><span>út</span><span>st</span><span>čt</span><span>pá</span><span>so</span><span>ne</span></div>
+      <div class="cal__grid" id="calGrid" role="grid"></div>
+      <p class="cal__legend"><i class="lg lg--busy"></i>obsazeno <i class="lg lg--sel"></i>Váš pobyt</p>
+      <div class="cal__row">
+        <span>Hostů</span>
+        <div class="step"><button type="button" id="gMinus" aria-label="Méně hostů">−</button><output id="gOut">2</output><button type="button" id="gPlus" aria-label="Více hostů">+</button></div>
+      </div>
+      <label class="cal__row cal__dog"><span>Pes s námi</span><input type="checkbox" id="dog"><i aria-hidden="true"></i></label>
+      <label class="cal__field"><span>E-mail</span><input type="email" id="mail" placeholder="vas@email.cz" autocomplete="email"></label>
+      <button class="cal__send" type="submit">Poslat poptávku</button>
+    </form>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p class="foot__word" aria-hidden="true">Sedm smrků</p>
+  <div class="foot__row">
+    <p>Chata v Jizerských horách</p>
+    <p>Ukázka · smyšlená značka · Vladislav Zachariev, <a href="https://whytelynx.cz" target="_blank" rel="noopener">Whyte Lynx</a></p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="vendor/lenis.min.js"></script>
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="main.js"></script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "5ae95e24cc924a0e84e28a82659ff3dc"}'></script>
+</body>
+</html>
