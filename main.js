@@ -328,7 +328,15 @@ void main(){
     trigger: '#aboutText', start: 'top 82%', end: 'bottom 48%', scrub: true,
     onUpdate: st => { const n = Math.round(st.progress * words.length); words.forEach((w, i) => w.classList.toggle('on', i < n)); }
   });
-  gsap.from('.facts li', { y: 40, opacity: 0, stagger: .1, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: '.facts', start: 'top 88%' } });
+  // facts: the line draws across, the icon draws itself, the seven spruces grow one by one
+  trees($('.fact__trees'), 70, 24).forEach((t, i) => t.querySelectorAll('path').forEach(p => p.style.setProperty('--i', i)));
+  if (!reduced) {
+    $('#facts').classList.add('is-armed');
+    $$('#facts .fact').forEach((li, i) => ScrollTrigger.create({
+      trigger: li, start: 'top 90%', once: true,
+      onEnter: () => setTimeout(() => li.classList.add('in'), (small ? 0 : i % 2) * 140)
+    }));
+  }
 
   /* ---------- lamp: light the room where you point ---------- */
   const fr = $('#lampFrame'), sw = $('#lampSwitch');
