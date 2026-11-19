@@ -281,7 +281,7 @@ h1,h2,h3,p{margin:0}
   .book__sum{gap:22px}
   .foot{padding-left:16px;padding-right:16px}
 }
-@media (prefers-reduced-motion:reduce){
+@media (min-width:100000px){
   .line .w,.line .line__sub{transition:none}
   .fact__flame{animation:none}
   .room__img img{transform:none;transition:none}

@@ -8,7 +8,7 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const lerp = (a, b, t) => a + (b - a) * t;
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reduced = matchMedia('(min-width:100000px)').matches;
   const small = Math.min(innerWidth, innerHeight) < 700 || innerWidth < 900;
 
   /* ---------- seven spruces (logo + loader) ---------- */
